@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: final-notice
+
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@211.63.89.70:1521:xe
+    username: final_orauser1
+    password: sistsix
+
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/**/*.xml
+  type-aliases-package: com.spring.app.js.notice.domain
+
+server:
+  port: 8002
+  forward-headers-strategy: framework
+
+jwt:
+  secret: e37ea07e222779c4066309ce10e47004a9718bbbc8e1062b7b4bca9b5d89a83d
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+logging:
+  level:
+    '[com.spring.app]': debug
+    com.netflix.discovery: WARN
+    org.springframework.cloud.netflix.eureka: WARN
+
+

@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .requestMatchers("/notice/list", "/notice", "/notice/detail/**").permitAll()
 
                 .requestMatchers("/notice/write", "/notice/edit/**", "/notice/delete")
-                    .hasRole("ADMIN_BRANCH")
+                    .hasAnyRole("ADMIN_HQ", "ADMIN_BRANCH")
 
                 .anyRequest().authenticated()
             )
