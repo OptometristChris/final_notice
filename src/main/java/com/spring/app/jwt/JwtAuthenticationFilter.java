@@ -29,17 +29,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String accessToken = null;
 
-        // 1. 먼저 Authorization 헤더에서 토큰 확인
         String bearerToken = request.getHeader("Authorization");
         accessToken = jwtTokenProvider.resolveToken(bearerToken);
 
-        // 2. 헤더에 없으면 쿠키에서 accessToken 확인
         if (accessToken == null) {
             accessToken = resolveTokenFromCookie(request, "accessToken");
         }
 
-        // 3. 토큰이 유효하면 SecurityContext 에 인증 저장
-        if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (currentAuth == null && accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
