@@ -45,15 +45,31 @@ pipeline {
 
         stage('Deploy to Server') {
             steps {
-                sshagent(['SERVER_SSH_KEY']) {  // 반드시 Jenkins 설치시 New credentials 에서 SSH Username with private key 에서 입력하였던 ID 이름을 넣어야 함.
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ubuntu@$SERVER_IP '
-                            docker stop $CONTAINER_NAME || true
-                            docker rm $CONTAINER_NAME || true
-                            docker pull $DOCKER_IMAGE:latest
-                            docker run -d --name $CONTAINER_NAME -p 8002:8002 $DOCKER_IMAGE:latest
-                        '
-                    """
+                withCredentials([
+                    string(credentialsId: 'HOTEL_DB_JDBC_URL', variable: 'HOTEL_DB_JDBC_URL'),
+                    string(credentialsId: 'HOTEL_DB_USERNAME', variable: 'HOTEL_DB_USERNAME'),
+                    string(credentialsId: 'HOTEL_DB_PASSWORD', variable: 'HOTEL_DB_PASSWORD'),
+                    string(credentialsId: 'HOTEL_JWT_SECRET', variable: 'HOTEL_JWT_SECRET')
+                ]) {
+                    sshagent(['SERVER_SSH_KEY']) {
+                        sh """
+                            ssh -o StrictHostKeyChecking=no ubuntu@$SERVER_IP "
+                                docker stop $CONTAINER_NAME || true
+                                docker rm $CONTAINER_NAME || true
+                                docker pull $DOCKER_IMAGE:latest
+                                docker run -d \\
+                                  --name $CONTAINER_NAME \\
+                                  -p 8002:8002 \\
+                                  -e SPRING_PROFILES_ACTIVE=local \\
+                                  -e SERVER_PORT=8002 \\
+                                  -e HOTEL_DB_JDBC_URL='$HOTEL_DB_JDBC_URL' \\
+                                  -e HOTEL_DB_USERNAME='$HOTEL_DB_USERNAME' \\
+                                  -e HOTEL_DB_PASSWORD='$HOTEL_DB_PASSWORD' \\
+                                  -e HOTEL_JWT_SECRET='$HOTEL_JWT_SECRET' \\
+                                  $DOCKER_IMAGE:latest
+                            "
+                        """
+                    }
                 }
             }
         }
