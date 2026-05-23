@@ -2,6 +2,9 @@ spring:
   application:
     name: final-notice
 
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+
   thymeleaf:
     cache: false
     prefix: classpath:/templates/
@@ -9,9 +12,9 @@ spring:
 
   datasource:
     driver-class-name: oracle.jdbc.OracleDriver
-    url: jdbc:oracle:thin:@211.63.89.70:1521:xe
-    username: final_orauser1
-    password: sistsix
+    url: ${HOTEL_DB_JDBC_URL}
+    username: ${HOTEL_DB_USERNAME}
+    password: ${HOTEL_DB_PASSWORD}
 
 mybatis:
   config-location: classpath:mybatis/mybatis-config.xml
@@ -19,11 +22,11 @@ mybatis:
   type-aliases-package: com.spring.app.js.notice.domain
 
 server:
-  port: 8002
+  port: ${SERVER_PORT:8002}
   forward-headers-strategy: framework
 
 jwt:
-  secret: e37ea07e222779c4066309ce10e47004a9718bbbc8e1062b7b4bca9b5d89a83d
+  secret: ${HOTEL_JWT_SECRET}
 
 eureka:
   instance:
