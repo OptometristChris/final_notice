@@ -36,5 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 
-# local application config
-src/main/resources/application.yml(로컬)
+# local practice application config
+src/main/resources/application.yml(로컬연습용)
